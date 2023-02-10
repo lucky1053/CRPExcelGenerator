@@ -1,58 +1,40 @@
 package org.infosys.crp;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 
 public class ExcelFileGenerator {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         try {
-            String csvFileAddress = "Only_Source.csv";
-            CSVToExcelConversion con = new CSVToExcelConversion();
-            con.csvToExcel(csvFileAddress);
-            Set<String> uniqueRecordSet = con.sourceXlsxToOutputXlsxConversion();
-            con.uniqueRecordFileGenerator(uniqueRecordSet);
-            con.uniqueRecordExcelToCsvConversion();
-         //   FileDeletion fd = new FileDeletion();
-       //     fd.deleteExcelFiles();
+            CSVToExcelFileGenerator csv = new CSVToExcelFileGenerator();
 
-            String path = "D:\\Tutorial_Automation\\Java\\CRPExcelReportGenerator\\Output Files";
-            File fObj = new File(path);
-            ExcelFileGenerator obj = new ExcelFileGenerator();
-            if (fObj.exists() && fObj.isDirectory()) {
-                File a[] = fObj.listFiles();
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-                System.out.println("Displaying Files from the directory : " + fObj);
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-                obj.printFileNames(a, 0);
-            }
+            //Source Only Records file generation steps
+            csv.inputCSVToExcel("Only_Source.csv");
 
-            String path2 = "D:\\Tutorial_Automation\\Java\\CRPExcelReportGenerator\\Input Files";
-            File fObj2 = new File(path2);
-            ExcelFileGenerator obj2 = new ExcelFileGenerator();
-            if (fObj2.exists() && fObj2.isDirectory()) {
-                File a[] = fObj2.listFiles();
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-                System.out.println("Displaying Files from the directory : " + fObj2);
-                System.out.println("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-                obj2.printFileNames(a, 0);
-            }
+            Set<String> sourceOnlyUniqueRecordSet= csv.onlySourceUniqueRecordSetGeneration();
+            System.out.println("Source Only Unique Records : "+sourceOnlyUniqueRecordSet);
+
+            csv.sourceOnlyUniqueRecordExcelFileGeneration(sourceOnlyUniqueRecordSet);
+
+            csv.sourceOnlyUniqueRecordsExcelToMissingCSVGeneration();
+
+            //Match file generation steps
+            csv.inputCSVToExcel("Match.csv");
+
+            Set<String> matchUniqueRecordSet=csv.matchCsvToMatchExcelGeneration();
+            System.out.println("Match Unique Records : "+matchUniqueRecordSet);
+
+            csv.matchUniqueRecordExcelFileGeneration(matchUniqueRecordSet);
+
+            csv.matchUniqueRecordsExcelToMatchingCSVGeneration();
+
+            //excel files clean steps
+            csv.excelFilesCleanUp();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void printFileNames(File[] a, int i) {
-        if (i == a.length) {
-            return;
-        }
-        if (a[i].isFile()) {
-            System.out.println(a[i].getName());
-            if(a[i].getName().contains(".xlsx")){
-                a[i].delete();
-            }
-        }
-        printFileNames(a, i + 1);
-    }
+
 }
 
